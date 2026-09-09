@@ -1,0 +1,4 @@
+interface:
+  display_name: "Lecture Quiz"
+  short_description: "Create and track mastery quizzes"
+  default_prompt: "Use $lecture-quiz to create a graded conceptual quiz and coding notebook from this lecture."
