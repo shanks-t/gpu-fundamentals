@@ -6,7 +6,13 @@
   },
   "github.copilot.nextEditSuggestions.enabled": false,
   "github.copilot.renameSuggestions.triggerAutomatically": false,
-  "python.defaultInterpreterPath": "/usr/bin/python",
+  "python.defaultInterpreterPath": "${env:HOME}/.venvs/gpu-fundamentals-analysis/bin/python",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.extraPaths": [
+    "/home/ubuntu/.venvs/gpu-fundamentals-analysis/lib/python3.10/site-packages"
+  ],
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.useLibraryCodeForTypes": true,
   "python.terminal.executeInFileDir": true,
   "remote.autoForwardPorts": true,
   "remote.portsAttributes": {
@@ -14,5 +20,6 @@
       "label": "GPU JupyterLab",
       "onAutoForward": "openBrowserOnce"
     }
-  }
+  },
+  "editor.inlineSuggest.enabled": false
 }

@@ -9,7 +9,7 @@ workspace.
 | --- | --- |
 | Edit, Git, VS Code terminal | Brev VM: `/home/ubuntu/workspace` |
 | CUDA, PyTorch, Triton, JupyterLab | NGC Compose service: `/workspace` |
-| Git branch on the VM | `remote` |
+| Default Git branch on the VM | `remote` (feature branches are also supported) |
 
 The two paths are the same files: the NGC service bind-mounts the VM checkout.
 Saving in VS Code makes an edit immediately available to the GPU runtime.
@@ -44,6 +44,16 @@ It starts or reuses the VM, configures Git on its `remote` checkout, launches
 the NGC Jupyter GPU runtime, and opens VS Code at
 `/home/ubuntu/workspace` through Remote SSH. This is the only VS Code window
 you need. Auto Save is configured for this workspace.
+
+On the first run, VS Code offers to install the workspace's recommended
+Python, Pylance, and Jupyter extensions. `open-workspace` also creates a
+CPU-only analysis environment under
+`/home/ubuntu/.venvs/gpu-fundamentals-analysis`. Pylance uses it for syntax
+highlighting, completions, navigation, type checking, and documentation on
+hover. The environment is not the GPU execution runtime; continue to use the
+GPU tasks or the NGC Jupyter kernel to run code. It persists across normal VM
+stop/start cycles and is refreshed when `infra/brev/editor-requirements.txt`
+changes.
 
 Do not run **Dev Containers: Reopen in Container** or **Attach to Running
 Container**. They are not part of this workflow.
@@ -98,6 +108,12 @@ JupyterLab**, then open `http://localhost:8889`.
 The browser JupyterLab session already uses the GPU-enabled NGC Python. The
 connectivity notebook at `infra/brev/scripts/connectivity-test.ipynb` should
 report CUDA availability and the active GPU.
+
+To use VS Code's notebook editor instead of the browser, open an `.ipynb`
+file, choose **Select Kernel**, then **Existing Jupyter Server**, and enter
+`http://127.0.0.1:8889`. VS Code stores that selection in its Remote SSH
+workspace state. Notebook execution still occurs inside the NGC container,
+while Pylance uses the analysis environment for editor assistance.
 
 ## Review and synchronize
 

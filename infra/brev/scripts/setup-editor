@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace=${1:-/home/ubuntu/workspace}
+requirements=$workspace/infra/brev/editor-requirements.txt
+venv=${GPU_EDITOR_VENV:-/home/ubuntu/.venvs/gpu-fundamentals-analysis}
+stamp=$venv/.requirements.sha256
+
+[[ $(id -un) == ubuntu ]] || {
+  echo "REFUSE: editor analysis environment must be owned by ubuntu" >&2
+  exit 1
+}
+[[ -f "$requirements" ]] || {
+  echo "REFUSE: requirements file not found: $requirements" >&2
+  exit 1
+}
+
+requirements_sha=$(sha256sum "$requirements" | awk '{print $1}')
+if [[ -x "$venv/bin/python" && -f "$stamp" ]] \
+  && [[ $(<"$stamp") == "$requirements_sha" ]]; then
+  "$venv/bin/python" -c 'import matplotlib, numba, numpy, torch, torchvision'
+  echo "Editor analysis environment is current: $venv"
+  exit 0
+fi
+
+echo "Preparing editor analysis environment at $venv"
+if ! python3 -c 'import ensurepip' >/dev/null 2>&1; then
+  echo "Installing the Ubuntu virtual-environment prerequisite"
+  sudo -n apt-get update
+  sudo -n apt-get install --yes python3-venv
+fi
+python3 -m venv "$venv"
+"$venv/bin/python" -m pip install --upgrade pip
+"$venv/bin/python" -m pip install --requirement "$requirements"
+"$venv/bin/python" -c 'import matplotlib, numba, numpy, torch, torchvision'
+printf '%s\n' "$requirements_sha" >"$stamp"
+echo "Editor analysis environment is ready: $venv"

@@ -44,4 +44,4 @@ We will work through these in order. Check an item only after you can explain it
 - [x] 26. Choose a one-dimensional launch configuration and write the formulas for `i` and the bounds check.
 - [x] 27. Write a `__global__` CUDA kernel that computes `out[i] = a[i] + b[i]` for float vectors.
 - [x] 28. Write the PyTorch C++ wrapper: validate CUDA tensors, allocate output, calculate block count with `cdiv`, launch on the current CUDA stream, and check launch errors.
-- [ ] 29. Write a small notebook driver using `load_inline` that creates inputs, calls your extension, and verifies its output with `torch.allclose` against PyTorch's `a + b`.
+- [x] 29. Write a small notebook driver using `load_inline` that creates inputs, calls your extension, and verifies its output with `torch.allclose` against PyTorch's `a + b`.
