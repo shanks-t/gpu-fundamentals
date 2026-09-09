@@ -24,6 +24,11 @@ if [[ -x "$venv/bin/python" && -f "$stamp" ]] \
 fi
 
 echo "Preparing editor analysis environment at $venv"
+if ! python3 -c 'import ensurepip' >/dev/null 2>&1; then
+  echo "Installing the Ubuntu virtual-environment prerequisite"
+  sudo -n apt-get update
+  sudo -n apt-get install --yes python3-venv
+fi
 python3 -m venv "$venv"
 "$venv/bin/python" -m pip install --upgrade pip
 "$venv/bin/python" -m pip install --requirement "$requirements"
