@@ -74,16 +74,22 @@ compose_file=$workspace/infra/brev/compose/ngc-pytorch.compose.yaml
 [[ $(id -un) == ubuntu ]] || { echo "REFUSE: remote checkout user must be ubuntu" >&2; exit 1; }
 test -d "$workspace/.git" || { echo "REFUSE: $workspace is not a Git checkout" >&2; exit 1; }
 install -d --mode=0755 /home/ubuntu/.devcontainer-home
-[[ $(git -C "$workspace" branch --show-current) == remote ]] || {
-  echo "REFUSE: checkout is not on the remote branch" >&2
+branch=$(git -C "$workspace" branch --show-current)
+[[ -n "$branch" ]] || {
+  echo "REFUSE: checkout is in detached HEAD state" >&2
   exit 1
 }
 if [[ "$pull_checkout" == true ]]; then
-  git -C "$workspace" pull --ff-only origin remote
+  git -C "$workspace" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' >/dev/null 2>&1 || {
+    echo "REFUSE: branch $branch has no upstream; push it before using --pull" >&2
+    exit 1
+  }
+  git -C "$workspace" pull --ff-only
 fi
 git -C "$workspace" config user.name "$git_name"
 git -C "$workspace" config user.email "$git_email"
 git -C "$workspace" ls-remote --exit-code origin refs/heads/remote </dev/null >/dev/null
+"$workspace/infra/brev/scripts/setup-editor" "$workspace"
 if ! docker image inspect gpu-fundamentals-ngc-pytorch:24.07-py3 >/dev/null 2>&1; then
   docker compose -f "$compose_file" build jupyter
 fi

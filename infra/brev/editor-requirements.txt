@@ -1,0 +1,10 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# Match the Python APIs in the pinned NGC 24.07 runtime without installing CUDA
+# packages on the VM host. NVIDIA's prerelease torch/torchvision builds do not
+# have identical public CPU wheels, so use their corresponding stable releases.
+torch==2.4.0+cpu
+torchvision==0.19.0+cpu
+numpy==1.24.4
+numba==0.59.1
+matplotlib==3.9.1
