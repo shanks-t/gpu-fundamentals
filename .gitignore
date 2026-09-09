@@ -11,6 +11,7 @@ reports/brev/*
 # Local, dated planning artifacts.
 docs/specs/
 __pycache__/
+.ipynb_checkpoints/
 *.pyc
 *.o
 # Generated CUDA executable and intermediate files for this lesson.
