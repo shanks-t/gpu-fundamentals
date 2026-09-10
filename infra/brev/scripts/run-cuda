@@ -25,23 +25,25 @@ case "$source_file" in
     ;;
 esac
 container_source=/workspace/$relative_source
+compute_capability=$(docker compose -f "$compose_file" exec -T jupyter \
+  nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -n 1 | tr -d '[:space:]')
+[[ "$compute_capability" =~ ^[0-9]+\.[0-9]+$ ]] || {
+  echo "REFUSE: could not determine the GPU compute capability" >&2
+  exit 1
+}
 
 case "$relative_source" in
   *.py)
     printf 'Running Python: %s\n' "$relative_source"
-    exec docker compose -f "$compose_file" exec -T jupyter \
+    exec docker compose -f "$compose_file" exec -T \
+      -e TORCH_CUDA_ARCH_LIST="$compute_capability" jupyter \
       python "$container_source" "$@"
     ;;
   *.cu)
     output_name=${relative_source//\//_}
     output_name=${output_name%.cu}
     container_output=/tmp/gpu-fundamentals/$output_name
-    capability=$(docker compose -f "$compose_file" exec -T jupyter \
-      nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -n 1 | tr -d '.')
-    [[ "$capability" =~ ^[0-9]+$ ]] || {
-      echo "REFUSE: could not determine the GPU compute capability" >&2
-      exit 1
-    }
+    capability=${compute_capability//./}
 
     printf 'Building %s for sm_%s\n' "$relative_source" "$capability"
     docker compose -f "$compose_file" exec -T jupyter bash -s -- \

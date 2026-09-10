@@ -88,7 +88,21 @@ if [[ "$pull_checkout" == true ]]; then
 fi
 git -C "$workspace" config user.name "$git_name"
 git -C "$workspace" config user.email "$git_email"
-git -C "$workspace" ls-remote --exit-code origin refs/heads/remote </dev/null >/dev/null
+upstream=$(git -C "$workspace" rev-parse --abbrev-ref --symbolic-full-name '@{upstream}' 2>/dev/null) || {
+  echo "REFUSE: branch $branch has no configured upstream" >&2
+  exit 1
+}
+upstream_remote=${upstream%%/*}
+upstream_branch=${upstream#*/}
+[[ "$upstream_remote" != "$upstream" && -n "$upstream_branch" ]] || {
+  echo "REFUSE: could not resolve upstream for branch $branch: $upstream" >&2
+  exit 1
+}
+git -C "$workspace" ls-remote --exit-code "$upstream_remote" \
+  "refs/heads/$upstream_branch" </dev/null >/dev/null || {
+  echo "REFUSE: configured upstream is unavailable: $upstream" >&2
+  exit 1
+}
 "$workspace/infra/brev/scripts/setup-editor" "$workspace"
 if ! docker image inspect gpu-fundamentals-ngc-pytorch:24.07-py3 >/dev/null 2>&1; then
   docker compose -f "$compose_file" build jupyter
