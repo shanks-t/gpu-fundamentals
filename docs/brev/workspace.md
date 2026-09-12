@@ -9,7 +9,7 @@ workspace.
 | --- | --- |
 | Edit, Git, VS Code terminal | Brev VM: `/home/ubuntu/workspace` |
 | CUDA, PyTorch, Triton, JupyterLab | NGC Compose service: `/workspace` |
-| Default Git branch on the VM | `remote` (feature branches are also supported) |
+| Default Git branch on the VM | `dev` tracking `origin/dev` (feature branches are also supported) |
 
 The two paths are the same files: the NGC service bind-mounts the VM checkout.
 Saving in VS Code makes an edit immediately available to the GPU runtime.
@@ -27,7 +27,7 @@ git config --global user.email "you@example.com"
 ```
 
 Install VS Code with the **Remote - SSH** extension. The VM workspace must be a
-Git clone on branch `remote`. If it contains an old rsync workspace, use the
+Git clone on branch `dev`. If it contains an old rsync workspace, use the
 migration scripts in `infra/brev/scripts/` first; never replace the checkout
 with rsync.
 
@@ -40,8 +40,8 @@ omit it when the VM has uncommitted edits.
 infra/brev/scripts/open-workspace gpu-fundamentals --confirm-start --pull
 ```
 
-It starts or reuses the VM, configures Git on its `remote` checkout, launches
-the NGC Jupyter GPU runtime, and opens VS Code at
+It starts or reuses the VM, configures Git on its current checkout, validates
+that branch's configured upstream, launches the NGC Jupyter GPU runtime, and opens VS Code at
 `/home/ubuntu/workspace` through Remote SSH. This is the only VS Code window
 you need. Auto Save is configured for this workspace.
 
@@ -67,8 +67,9 @@ terminal.
 
 The Command Palette command **Tasks: Run Task** also provides:
 
-- **GPU: Build and Run Current Standalone CUDA File** — compiles the active
-  standalone `.cu` file for the NVIDIA L4 and runs its temporary executable.
+- **GPU: Build and Run Current Standalone CUDA File** — detects the active GPU,
+  compiles the active standalone `.cu` file for its compute capability, and
+  runs the temporary executable.
 - **GPU: CUDA and PyTorch Check** — verifies the active CUDA GPU and versions.
 - **GPU: Open Runtime Shell** — opens a shell inside the NGC environment.
 
@@ -97,6 +98,11 @@ A `.cu` file that exposes `torch::Tensor` is a PyTorch extension, not a
 standalone executable. Test it from a Python or notebook driver using
 `torch.utils.cpp_extension.load_inline`; the standalone CUDA task is for files
 with a `main()` function, such as `vector_addition.cu`.
+
+Use a stable, lesson-specific `load_inline` module name. Generic names such as
+`test_ext` can collide with failed or older builds in the persistent extension
+cache. After fixing compiler settings, restart the notebook kernel before
+rebuilding so PyTorch does not retain stale module-version state.
 
 ## JupyterLab
 
@@ -129,13 +135,13 @@ git status
 git diff
 git add PATHS
 git commit -m "feat: improve kernel"
-git push origin remote
+git push
 ```
 
 Update your Mac checkout when needed:
 
 ```sh
-git pull --ff-only origin remote
+git pull --ff-only origin dev
 ```
 
 Never use delete-based source sync: it can overwrite VM edits and Git metadata.

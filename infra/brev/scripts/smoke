@@ -14,6 +14,10 @@ docker compose -f infra/brev/compose/ngc-pytorch.compose.yaml run --rm pytorch -
   nvcc --version
   ncu --version
   nsys --version
+  test "$(id -u)" = 1000
+  test "$CC" = /usr/bin/gcc-11
+  test "$CXX" = /usr/bin/g++-11
+  command -v ninja gcc-11 g++-11
   python -c "import torch; assert torch.cuda.is_available(); print(torch.cuda.get_device_name(0))"
   python curriculum/gpu-mode-lecture-001/pytorch_square.py
 '
