@@ -73,7 +73,7 @@ The Command Palette command **Tasks: Run Task** also provides:
 - **GPU: CUDA and PyTorch Check** — verifies the active CUDA GPU and versions.
 - **GPU: Open Runtime Shell** — opens a shell inside the NGC environment.
 
-The host Python on the VM intentionally does not provide PyTorch or CUDA. Run
+The host Python intentionally does not provide PyTorch or CUDA. Run
 GPU commands through these tasks or from the runtime shell. For example:
 
 ```sh
@@ -145,6 +145,35 @@ git pull --ff-only origin dev
 ```
 
 Never use delete-based source sync: it can overwrite VM edits and Git metadata.
+
+## Home RTX 5070 profile
+
+The home host uses the same Remote SSH, task, container path, and Jupyter
+workflow. Its checkout is `/home/trey/workspace/gpu-fundamentals`, and its
+analysis environment is `/home/trey/.venvs/gpu-fundamentals-analysis`.
+
+Select the home profile once in that checkout; `.gpu/` is host-local and
+ignored by Git:
+
+```sh
+mkdir -p .gpu
+printf 'home\n' >.gpu/runtime-profile
+```
+
+The default `cloud` profile preserves `nvcr.io/nvidia/pytorch:24.07-py3`.
+The `home` override selects the Blackwell-compatible image
+`nvcr.io/nvidia/pytorch:25.01-py3` at manifest digest
+`sha256:96990c82825613c3bdeebb66675c7c91b0123f64a5895623316dc5b824e0d7a9`.
+Both profiles mount their host checkout at `/workspace`; Jupyter remains bound
+only to `127.0.0.1:8889`.
+
+Run Compose through the selector so the host-local profile is applied:
+
+```sh
+infra/brev/scripts/compose build jupyter
+infra/brev/scripts/compose up -d --no-build jupyter
+infra/brev/scripts/compose ps
+```
 
 ## Finish
 

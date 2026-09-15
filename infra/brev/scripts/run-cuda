@@ -11,7 +11,7 @@ source_arg=${1:-}
 shift
 
 workspace=$(git rev-parse --show-toplevel)
-compose_file=$workspace/infra/brev/compose/ngc-pytorch.compose.yaml
+compose=$workspace/infra/brev/scripts/compose
 case "$source_arg" in
   /*) source_file=$(realpath -e "$source_arg") ;;
   *) source_file=$(realpath -e "$workspace/$source_arg") ;;
@@ -25,7 +25,7 @@ case "$source_file" in
     ;;
 esac
 container_source=/workspace/$relative_source
-compute_capability=$(docker compose -f "$compose_file" exec -T jupyter \
+compute_capability=$("$compose" exec -T jupyter \
   nvidia-smi --query-gpu=compute_cap --format=csv,noheader | head -n 1 | tr -d '[:space:]')
 [[ "$compute_capability" =~ ^[0-9]+\.[0-9]+$ ]] || {
   echo "REFUSE: could not determine the GPU compute capability" >&2
@@ -35,7 +35,7 @@ compute_capability=$(docker compose -f "$compose_file" exec -T jupyter \
 case "$relative_source" in
   *.py)
     printf 'Running Python: %s\n' "$relative_source"
-    exec docker compose -f "$compose_file" exec -T \
+    exec "$compose" exec -T \
       -e TORCH_CUDA_ARCH_LIST="$compute_capability" jupyter \
       python "$container_source" "$@"
     ;;
@@ -46,7 +46,7 @@ case "$relative_source" in
     capability=${compute_capability//./}
 
     printf 'Building %s for sm_%s\n' "$relative_source" "$capability"
-    docker compose -f "$compose_file" exec -T jupyter bash -s -- \
+    "$compose" exec -T jupyter bash -s -- \
       "$container_source" "$container_output" "sm_$capability" "$@" <<'CONTAINER'
 set -euo pipefail
 source_file=$1

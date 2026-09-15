@@ -1,0 +1,18 @@
+services:
+  pytorch:
+    build:
+      args:
+        NGC_PYTORCH_IMAGE: nvcr.io/nvidia/pytorch:25.01-py3@sha256:96990c82825613c3bdeebb66675c7c91b0123f64a5895623316dc5b824e0d7a9
+    image: gpu-fundamentals-ngc-pytorch:25.01-py3-home
+    volumes:
+      - ${GPU_LAB_CACHE_ROOT:-${HOME}/.cache/gpu-lab}/huggingface:/home/ubuntu/.cache/huggingface
+      - ${GPU_LAB_CACHE_ROOT:-${HOME}/.cache/gpu-lab}/torch:/home/ubuntu/.cache/torch
+
+  jupyter:
+    build:
+      args:
+        NGC_PYTORCH_IMAGE: nvcr.io/nvidia/pytorch:25.01-py3@sha256:96990c82825613c3bdeebb66675c7c91b0123f64a5895623316dc5b824e0d7a9
+    image: gpu-fundamentals-ngc-pytorch:25.01-py3-home
+    volumes:
+      - ${GPU_LAB_CACHE_ROOT:-${HOME}/.cache/gpu-lab}/huggingface:/home/ubuntu/.cache/huggingface
+      - ${GPU_LAB_CACHE_ROOT:-${HOME}/.cache/gpu-lab}/torch:/home/ubuntu/.cache/torch

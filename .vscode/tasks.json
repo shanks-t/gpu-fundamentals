@@ -4,11 +4,8 @@
     {
       "label": "GPU: Run Current Python File",
       "type": "shell",
-      "command": "docker",
+      "command": "infra/brev/scripts/compose",
       "args": [
-        "compose",
-        "-f",
-        "infra/brev/compose/ngc-pytorch.compose.yaml",
         "exec",
         "-T",
         "jupyter",
@@ -27,11 +24,8 @@
     {
       "label": "GPU: CUDA and PyTorch Check",
       "type": "shell",
-      "command": "docker",
+      "command": "infra/brev/scripts/compose",
       "args": [
-        "compose",
-        "-f",
-        "infra/brev/compose/ngc-pytorch.compose.yaml",
         "exec",
         "-T",
         "jupyter",
@@ -59,11 +53,8 @@
     {
       "label": "GPU: Open Runtime Shell",
       "type": "shell",
-      "command": "docker",
+      "command": "infra/brev/scripts/compose",
       "args": [
-        "compose",
-        "-f",
-        "infra/brev/compose/ngc-pytorch.compose.yaml",
         "exec",
         "jupyter",
         "bash"

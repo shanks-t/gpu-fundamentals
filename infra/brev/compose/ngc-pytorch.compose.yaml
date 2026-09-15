@@ -2,6 +2,8 @@ x-pytorch: &pytorch
   build:
     context: ..
     dockerfile: Dockerfile
+    args:
+      NGC_PYTORCH_IMAGE: nvcr.io/nvidia/pytorch:24.07-py3
   image: gpu-fundamentals-ngc-pytorch:24.07-py3
   deploy:
     resources:
@@ -13,8 +15,8 @@ x-pytorch: &pytorch
   working_dir: /workspace
   user: ubuntu
   volumes:
-    - /home/ubuntu/workspace:/workspace
-    - /home/ubuntu/.devcontainer-home:/home/ubuntu
+    - ../../..:/workspace
+    - ${HOME}/.devcontainer-home:/home/ubuntu
   environment:
     CC: /usr/bin/gcc-11
     CXX: /usr/bin/g++-11

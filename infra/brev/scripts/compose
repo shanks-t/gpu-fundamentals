@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace=$(git rev-parse --show-toplevel)
+profile=${GPU_RUNTIME_PROFILE:-}
+profile_file=$workspace/.gpu/runtime-profile
+if [[ -z "$profile" && -f "$profile_file" ]]; then
+  IFS= read -r profile <"$profile_file"
+fi
+profile=${profile:-cloud}
+
+compose_args=(-f "$workspace/infra/brev/compose/ngc-pytorch.compose.yaml")
+case "$profile" in
+  cloud) ;;
+  home)
+    compose_args+=(-f "$workspace/infra/brev/compose/ngc-pytorch.home.compose.yaml")
+    ;;
+  *)
+    echo "REFUSE: GPU runtime profile must be cloud or home, not: $profile" >&2
+    exit 2
+    ;;
+esac
+
+exec docker compose "${compose_args[@]}" "$@"
