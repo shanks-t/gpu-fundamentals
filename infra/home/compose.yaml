@@ -1,0 +1,53 @@
+name: gpu-fundamentals-home
+
+x-runtime: &runtime
+  build:
+    context: ../..
+    dockerfile: infra/home/Dockerfile
+  image: gpu-fundamentals-home:25.01-py3
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+  working_dir: /workspace
+  user: ubuntu
+  volumes:
+    - ../..:/workspace
+    - ${HOME}/.devcontainer-home:/home/ubuntu
+    - ${HOME}/.cache/gpu-lab/huggingface:/home/ubuntu/.cache/huggingface
+    - ${HOME}/.cache/gpu-lab/torch:/home/ubuntu/.cache/torch
+  environment:
+    CC: /usr/bin/gcc-11
+    CXX: /usr/bin/g++-11
+    HOME: /home/ubuntu
+    NVIDIA_DRIVER_CAPABILITIES: compute,utility
+  entrypoint: ["bash"]
+  restart: unless-stopped
+
+services:
+  pytorch:
+    <<: *runtime
+    restart: "no"
+
+  jupyter:
+    <<: *runtime
+    ports:
+      - "127.0.0.1:8889:8888"
+    command:
+      - -lc
+      - >-
+        export TORCH_CUDA_ARCH_LIST="$$(nvidia-smi --query-gpu=compute_cap
+        --format=csv,noheader | head -n 1)";
+        exec jupyter lab --ip=0.0.0.0 --port=8888 --no-browser
+        --ServerApp.token='' --ServerApp.password=''
+        --NotebookApp.token='' --NotebookApp.password=''
+        --ServerApp.allow_remote_access=True
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8888/api/status')"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s

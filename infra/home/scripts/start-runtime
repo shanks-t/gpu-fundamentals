@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace=$(git rev-parse --show-toplevel)
+compose=$workspace/infra/home/scripts/compose
+image=$("$compose" config --images | head -n 1)
+[[ -n "$image" ]] || {
+  echo "REFUSE: Compose did not resolve the home runtime image" >&2
+  exit 1
+}
+
+if ! docker image inspect "$image" >/dev/null 2>&1; then
+  "$compose" build jupyter
+fi
+if ss -ltn '( sport = :8889 )' | grep -q LISTEN \
+  && [[ -z $("$compose" ps --status running -q jupyter) ]]; then
+  echo "REFUSE: port 8889 is occupied outside the home Jupyter service" >&2
+  exit 1
+fi
+
+"$compose" up -d --no-build --no-deps --wait --wait-timeout 60 jupyter
+# The single quotes intentionally defer variable expansion to the container.
+# shellcheck disable=SC2016
+"$compose" exec -T jupyter sh -lc '
+  test "$(id -u)" = 1000
+  test "$HOME" = /home/ubuntu
+  test "$CC" = /usr/bin/gcc-11
+  test "$CXX" = /usr/bin/g++-11
+  command -v ninja gcc-11 g++-11 >/dev/null
+  python -c "import torch; assert torch.cuda.is_available(); print(\"Home GPU:\", torch.cuda.get_device_name(0))"
+'

@@ -28,7 +28,10 @@ We may use external material as learning references, including:
 - [OLCF CUDA Training Series exercises](https://github.com/olcf/cuda-training-series/tree/master/exercises)
 - [Programming Massively Parallel Processors](https://shop.elsevier.com/books/programming-massively-parallel-processors/hwu/978-0-443-43900-1), by Hwu, Kirk, and Hajj. We are working through this book; use its chapter topics to locate relevant reference materials and include the source links in learner notes or exercises.
 
-## GPU infrastructure (NGC / brev)
+## GPU infrastructure
 
 For requests to run GPU code or start, stop, create, connect to, or otherwise
-manage GPU infrastructure, first follow [`infra/brev/AGENTS.md`](infra/brev/AGENTS.md).
+manage GPU infrastructure, first follow [`infra/home/AGENTS.md`](infra/home/AGENTS.md).
+The home RTX 5070 server is the default and should receive workflow
+improvements first. Only load [`infra/brev/AGENTS.md`](infra/brev/AGENTS.md)
+when the user explicitly asks to use or plan a cloud GPU.

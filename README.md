@@ -1,37 +1,41 @@
 # GPU Fundamentals
 
-Learn GPU programming fundamentals on real hardware without owning a GPU.
-Work through *[Programming Massively Parallel
-Processors](https://shop.elsevier.com/books/programming-massively-parallel-processors/hwu/978-0-443-43900-1)*,
-by Hwu, Kirk, and Hajj; edit and commit in a short-lived Brev VM, run inside
-the pinned NVIDIA NGC container, and pull the work back to your Mac.
+Learn GPU programming fundamentals on the home RTX 5070. Work through
+*[Programming Massively Parallel Processors](https://shop.elsevier.com/books/programming-massively-parallel-processors/hwu/978-0-443-43900-1)*,
+by Hwu, Kirk, and Hajj; edit through VS Code Remote SSH and run CUDA, PyTorch,
+profiling, and notebook workloads in the pinned NVIDIA NGC container.
 
 ## Start here
 
-1. Read the [GPU kernel development workspace guide](docs/brev/workspace.md).
+1. Follow the [home GPU workspace guide](docs/home/workspace.md).
 2. Choose the current chapter in *Programming Massively Parallel Processors*.
-3. Start with the related curriculum material: [GPU MODE Lecture 001](curriculum/gpu-mode-lecture-001/) or [GPU MODE Lecture 002](curriculum/gpu-mode-lecture-002/).
+3. Start with the related [curriculum](curriculum/README.md).
 
-The lessons run in the NGC container, not directly on the VM host.
+Open the configured server from the Mac:
 
-## Run the GPU workspace
+```sh
+infra/home/scripts/open-workspace
+```
 
-Use the container-backed workspace for CUDA Python, notebooks, profiling, and
-Git synchronization. The [GPU kernel development workspace guide](docs/brev/workspace.md)
-is the canonical setup and daily workflow.
+In the Remote SSH window, **Cmd+Shift+B** starts the runtime if necessary and
+runs the active Python file on the RTX 5070. GPU code runs in the container,
+not in the host's Pylance analysis environment.
 
-## A few useful places
+## Useful places
 
+- [Home GPU workspace](docs/home/workspace.md) — canonical editor, runtime,
+  notebook, and Git workflow.
+- [Home infrastructure](infra/home/) — pinned image, Compose service, scripts,
+  observability, and operational rules.
 - [Curriculum](curriculum/README.md) — exercises and artifacts.
 - [Learning tools](learning-tools/README.md) — reusable interactive visualizations.
-- [Programming Massively Parallel Processors](https://shop.elsevier.com/books/programming-massively-parallel-processors/hwu/978-0-443-43900-1) — primary textbook; add chapter-aligned source links to learner notes and exercises.
-- [Brev infrastructure rules](infra/brev/AGENTS.md) — VM lifecycle and NGC.
-- [GPU kernel development workspace](docs/brev/workspace.md) — VM, editor, GPU, and Git workflow.
-- [Scripts](scripts/README.md) — local helpers.
 - [Today I Learned](TIL.md) — notes from the journey.
+- [Scripts](scripts/README.md) — other local helpers.
 
-## Budget-friendly GPU programming
+## Future scale-up
 
-Prefer a suitable stopped VM before creating another one—it starts faster and
-keeps its workspace. Creating or starting a VM costs money, so check the
-candidate list, use dry-runs, and stop the VM when you are done.
+The home workflow is intentionally primary. If an exercise later needs more
+than 12 GB VRAM, a different accelerator, or multiple GPUs, adapt a Brev or
+other cloud environment to the proven home interface. The existing Brev
+automation remains under `infra/brev/` as a reference, but it is not used by
+the default VS Code tasks.

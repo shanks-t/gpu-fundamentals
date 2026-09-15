@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+host=${GPU_HOME_SSH_HOST:-gpu-home}
+remote_workspace=${GPU_HOME_WORKSPACE:-/home/trey/workspace/gpu-fundamentals}
+
+command -v ssh >/dev/null || { echo "REFUSE: ssh is required" >&2; exit 1; }
+command -v code >/dev/null || { echo "REFUSE: VS Code command 'code' is required" >&2; exit 1; }
+
+ssh -o BatchMode=yes "$host" bash -s -- "$remote_workspace" <<'REMOTE'
+set -euo pipefail
+workspace=$1
+test -d "$workspace/.git" || { echo "REFUSE: home workspace is not a Git checkout: $workspace" >&2; exit 1; }
+cd "$workspace"
+infra/home/scripts/setup-editor "$workspace"
+infra/home/scripts/start-runtime
+git status --short --branch
+REMOTE
+
+exec code --remote "ssh-remote+$host" "$remote_workspace"

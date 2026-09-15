@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+workspace=$(git rev-parse --show-toplevel)
+exec "$workspace/infra/home/scripts/compose" down

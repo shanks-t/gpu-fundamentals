@@ -2,9 +2,18 @@
   "version": "2.0.0",
   "tasks": [
     {
+      "label": "GPU: Start Runtime",
+      "type": "shell",
+      "command": "infra/home/scripts/start-runtime",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
       "label": "GPU: Run Current Python File",
       "type": "shell",
-      "command": "infra/brev/scripts/compose",
+      "command": "infra/home/scripts/compose",
       "args": [
         "exec",
         "-T",
@@ -15,6 +24,8 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "dependsOn": "GPU: Start Runtime",
+      "dependsOrder": "sequence",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -24,7 +35,7 @@
     {
       "label": "GPU: CUDA and PyTorch Check",
       "type": "shell",
-      "command": "infra/brev/scripts/compose",
+      "command": "infra/home/scripts/compose",
       "args": [
         "exec",
         "-T",
@@ -36,24 +47,28 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "dependsOn": "GPU: Start Runtime",
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {
       "label": "GPU: Build and Run Current Standalone CUDA File",
       "type": "shell",
-      "command": "infra/brev/scripts/run-gpu",
+      "command": "infra/home/scripts/run-gpu",
       "args": [
         "${relativeFile}"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "dependsOn": "GPU: Start Runtime",
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {
       "label": "GPU: Open Runtime Shell",
       "type": "shell",
-      "command": "infra/brev/scripts/compose",
+      "command": "infra/home/scripts/compose",
       "args": [
         "exec",
         "jupyter",
@@ -62,7 +77,18 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
+      "dependsOn": "GPU: Start Runtime",
+      "dependsOrder": "sequence",
       "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "GPU: Stop Runtime",
+      "type": "shell",
+      "command": "infra/home/scripts/stop-runtime",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
       "problemMatcher": []
     }
   ]
