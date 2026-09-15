@@ -61,8 +61,6 @@
       "options": {
         "cwd": "${workspaceFolder}"
       },
-      "dependsOn": "GPU: Start Runtime",
-      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {

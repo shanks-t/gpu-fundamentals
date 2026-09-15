@@ -17,8 +17,8 @@ x-runtime: &runtime
   volumes:
     - ../..:/workspace
     - ${HOME}/.devcontainer-home:/home/ubuntu
-    - ${HOME}/.cache/gpu-lab/huggingface:/home/ubuntu/.cache/huggingface
-    - ${HOME}/.cache/gpu-lab/torch:/home/ubuntu/.cache/torch
+    - ${GPU_LAB_CACHE_ROOT:-${HOME}/.cache/gpu-lab}/huggingface:/home/ubuntu/.cache/huggingface
+    - ${GPU_LAB_CACHE_ROOT:-${HOME}/.cache/gpu-lab}/torch:/home/ubuntu/.cache/torch
   environment:
     CC: /usr/bin/gcc-11
     CXX: /usr/bin/g++-11
