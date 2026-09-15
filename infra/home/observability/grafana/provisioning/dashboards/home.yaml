@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: Home GPU server
+    orgId: 1
+    folder: Home GPU Server
+    type: file
+    disableDeletion: true
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
