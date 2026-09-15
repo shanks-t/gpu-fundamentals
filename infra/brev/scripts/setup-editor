@@ -5,6 +5,8 @@ workspace=${1:-$(git rev-parse --show-toplevel)}
 requirements=$workspace/infra/brev/editor-requirements.txt
 venv=${GPU_EDITOR_VENV:-$HOME/.venvs/gpu-fundamentals-analysis}
 stamp=$venv/.requirements.sha256
+uv_version=0.12.14
+uv_bin=$HOME/.local/bin/uv
 
 [[ -w "$HOME" ]] || {
   echo "REFUSE: home directory is not writable: $HOME" >&2
@@ -15,6 +17,12 @@ stamp=$venv/.requirements.sha256
   exit 1
 }
 
+if [[ ! -x "$uv_bin" ]] || [[ $("$uv_bin" --version 2>/dev/null) != "uv $uv_version" ]]; then
+  echo "Installing uv $uv_version under $HOME/.local/bin"
+  curl -LsSf "https://astral.sh/uv/$uv_version/install.sh" \
+    | env UV_INSTALL_DIR="$HOME/.local/bin" UV_NO_MODIFY_PATH=1 sh
+fi
+
 requirements_sha=$(sha256sum "$requirements" | awk '{print $1}')
 if [[ -x "$venv/bin/python" && -f "$stamp" ]] \
   && [[ $(<"$stamp") == "$requirements_sha" ]]; then
@@ -24,14 +32,9 @@ if [[ -x "$venv/bin/python" && -f "$stamp" ]] \
 fi
 
 echo "Preparing editor analysis environment at $venv"
-if ! python3 -c 'import ensurepip' >/dev/null 2>&1; then
-  echo "Installing the Ubuntu virtual-environment prerequisite"
-  sudo -n apt-get update
-  sudo -n apt-get install --yes python3-venv
-fi
-python3 -m venv "$venv"
-"$venv/bin/python" -m pip install --upgrade pip
-"$venv/bin/python" -m pip install --requirement "$requirements"
+"$uv_bin" venv --clear --python 3.12 "$venv"
+"$uv_bin" pip install --index-strategy unsafe-best-match \
+  --python "$venv/bin/python" --requirement "$requirements"
 "$venv/bin/python" -c 'import matplotlib, numba, numpy, torch, torchvision'
 printf '%s\n' "$requirements_sha" >"$stamp"
-echo "Editor analysis environment is ready: $venv"
+echo "Editor analysis environment is ready: $venv (uv $uv_version)"

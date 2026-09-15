@@ -55,6 +55,12 @@ GPU tasks or the NGC Jupyter kernel to run code. It persists across normal VM
 stop/start cycles and is refreshed when `infra/brev/editor-requirements.txt`
 changes.
 
+The setup script pins `uv 0.12.14` under `$HOME/.local/bin` and uses Python
+3.12 to recreate and install the analysis environment whenever its requirements
+change. The requirements use only PyPI and PyTorch's official CPU wheel index.
+It does not modify the host system Python and does not replace the Python,
+CUDA, or PyTorch packages in the NGC runtime.
+
 Do not run **Dev Containers: Reopen in Container** or **Attach to Running
 Container**. They are not part of this workflow.
 
