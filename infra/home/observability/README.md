@@ -1,9 +1,9 @@
 # Home GPU observability
 
 This independent Compose project monitors the home GPU server with DCGM
-Exporter, node_exporter, Prometheus, and Grafana. All HTTP endpoints bind only
-to remote loopback. Access Grafana through the `gpu-home` SSH connection; never
-open router ports.
+Exporter, node_exporter, Prometheus, and Grafana. All backend HTTP endpoints
+bind only to remote loopback. Tailscale Serve proxies Grafana over private
+tailnet HTTPS; never use Tailscale Funnel or open router ports.
 
 ## Start
 
@@ -16,22 +16,43 @@ openssl rand -base64 32 >"$HOME/.config/gpu-observability/grafana_admin_password
 docker compose -f infra/home/observability/compose.yaml up -d
 ```
 
-Forward Grafana from the Mac:
+## Access from the tailnet
+
+Tailscale Serve is configured persistently on `gpu-server`:
 
 ```sh
-ssh -N -L 3000:127.0.0.1:3000 gpu-home
+sudo tailscale serve --bg 3000
+tailscale serve status
 ```
 
-Open `http://127.0.0.1:3000`, sign in as `admin`, and read the generated
-password in a separate local terminal only when needed:
+From any device connected to the same tailnet, open:
+
+```text
+https://gpu-server.tail92f21a.ts.net/
+```
+
+Sign in as `admin`, and read the generated password in a separate local
+terminal only when needed:
 
 ```sh
 ssh -t gpu-home 'cat "$HOME/.config/gpu-observability/grafana_admin_password"'
 ```
 
-Anonymous access and user sign-up are disabled. The provisioned **GPU Server
-Overview** dashboard includes GPU utilization, temperature, power, framebuffer
-memory, CPU, RAM, storage, and wired Ethernet throughput.
+Anonymous access and user sign-up are disabled. Tailscale controls network
+reachability; Grafana authentication remains required. Disable the proxy with
+`sudo tailscale serve --https=443 off`.
+
+If Serve is unavailable, use an SSH tunnel as a fallback:
+
+```sh
+ssh -N -L 3000:127.0.0.1:3000 gpu-home
+```
+
+Then open `http://127.0.0.1:3000`.
+
+The provisioned **GPU Server Overview** dashboard includes GPU utilization,
+temperature, power, framebuffer memory, CPU, RAM, storage, and wired Ethernet
+throughput.
 
 ## Pinned images
 
