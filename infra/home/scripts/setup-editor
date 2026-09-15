@@ -17,7 +17,8 @@ uv_bin=$HOME/.local/bin/uv
   exit 1
 }
 
-if [[ ! -x "$uv_bin" ]] || [[ $("$uv_bin" --version 2>/dev/null) != "uv $uv_version" ]]; then
+installed_uv_version=$([[ -x "$uv_bin" ]] && "$uv_bin" --version 2>/dev/null | awk '{print $2}' || true)
+if [[ "$installed_uv_version" != "$uv_version" ]]; then
   echo "Installing uv $uv_version under $HOME/.local/bin"
   curl -LsSf "https://astral.sh/uv/$uv_version/install.sh" \
     | env UV_INSTALL_DIR="$HOME/.local/bin" UV_NO_MODIFY_PATH=1 sh
