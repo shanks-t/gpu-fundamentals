@@ -4,6 +4,14 @@ set -euo pipefail
 workspace=$(git rev-parse --show-toplevel)
 profile=${GPU_RUNTIME_PROFILE:-}
 profile_file=$workspace/.gpu/runtime-profile
+container_home=$HOME/.devcontainer-home
+
+mkdir -p "$container_home/.cache"
+[[ -w "$container_home/.cache" ]] || {
+  echo "REFUSE: container cache directory is not writable: $container_home/.cache" >&2
+  exit 1
+}
+
 if [[ -z "$profile" && -f "$profile_file" ]]; then
   IFS= read -r profile <"$profile_file"
 fi
