@@ -8,5 +8,10 @@ RUN groupadd --gid 1000 ubuntu 2>/dev/null || true \
        fi \
     && install -d --owner=1000 --group=1000 --mode=0755 /home/ubuntu
 
+# Keep native-extension notebooks on the same host compiler across NGC bases.
+RUN apt-get update \
+    && apt-get install --yes --no-install-recommends gcc-11 g++-11 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Required by notebook cells that capture native CUDA/C++ output.
 RUN python -m pip install --no-cache-dir wurlitzer==3.1.1
