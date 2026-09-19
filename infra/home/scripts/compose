@@ -5,6 +5,15 @@ workspace=$(git rev-parse --show-toplevel)
 container_home=$HOME/.devcontainer-home
 cache_root=${GPU_LAB_CACHE_ROOT:-$HOME/.cache/gpu-lab}
 
+case $cache_root in
+  /srv/gpu-lab|/srv/gpu-lab/*)
+    mountpoint -q /srv/gpu-lab || {
+      echo "REFUSE: /srv/gpu-lab is not a mounted filesystem" >&2
+      exit 1
+    }
+    ;;
+esac
+
 mkdir -p "$container_home/.cache" "$cache_root/huggingface" "$cache_root/torch"
 for directory in "$container_home/.cache" "$cache_root/huggingface" "$cache_root/torch"; do
   [[ -w "$directory" ]] || {

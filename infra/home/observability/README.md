@@ -54,6 +54,38 @@ The provisioned **GPU Server Overview** dashboard includes GPU utilization,
 temperature, power, framebuffer memory, CPU, RAM, storage, and wired Ethernet
 throughput.
 
+## Storage monitoring and host limits
+
+The root-filesystem panel uses green below 70%, yellow from 70% to 80%, red
+from 80% to 90%, and dark red at 90% and above. Prometheus evaluates matching
+alerts after 30, 15, and 5 minutes respectively, plus a critical alert when
+less than 20 GiB remains. Alerts are visible in Prometheus; outbound
+notifications require a separately configured Grafana or Alertmanager contact
+point so credentials remain outside this repository.
+
+Prometheus retains at most 30 days or 5 GB, whichever limit is reached first.
+Install the version-controlled Docker and journald limits on the host with:
+
+```sh
+sudo install -m 0644 infra/home/host-config/docker-daemon.json /etc/docker/daemon.json
+sudo install -d -m 0755 /etc/systemd/journald.conf.d
+sudo install -m 0644 infra/home/host-config/journald-storage.conf \
+  /etc/systemd/journald.conf.d/60-gpu-home-storage.conf
+sudo systemctl restart systemd-journald
+sudo systemctl restart docker
+```
+
+Docker retains at most three 50 MB JSON log files per newly created container;
+recreate existing containers to adopt that default. Journald is capped at 1 GB
+of persistent storage and 256 MB of runtime storage. Do not automate Docker
+image or build-cache deletion: inspect `docker system df` and remove only
+reproducible, disposable data after an alert.
+
+When the data SSD is later mounted, set `GPU_LAB_CACHE_ROOT` beneath
+`/srv/gpu-lab`. The home Compose wrapper refuses to create cache directories
+there unless `/srv/gpu-lab` is an actual mount, preventing a missing data drive
+from silently filling the root filesystem.
+
 ## Pinned images
 
 - DCGM Exporter `4.5.3-4.8.2-distroless` — `sha256:60d3b00ac80b4ae77f94dae2f943685605585ad9e92fdccda3154d009ae317cc`
