@@ -24,3 +24,9 @@ commit `77a8df418834e5789c12da23e7d2719e0efabef1`, retrieved 2026-09-20.
 
 It is redistributed under the upstream Apache License 2.0; see the
 [lecture license](gpu-mode-lecture-005/LICENSE). The notebook is kept unchanged.
+
+The shared module [`utils.py`](utils.py) is copied unchanged from
+[`gpu-mode/lectures/utils.py`](https://github.com/gpu-mode/lectures/blob/77a8df418834e5789c12da23e7d2719e0efabef1/utils.py),
+commit `77a8df418834e5789c12da23e7d2719e0efabef1`, retrieved 2026-09-20.
+It is redistributed under the upstream Apache License 2.0; see the
+[included license](gpu-mode-lecture-005/LICENSE).
