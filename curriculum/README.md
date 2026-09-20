@@ -4,6 +4,9 @@ Each lecture lives directly in this directory. Lecture code is kept with the
 lesson, and generated profiles, traces, plots, and other run output belong in
 that lesson's `artifacts/` directory.
 
+- [Lecture 005: Matrix multiplication](gpu-mode-lecture-005/matmul_l5.ipynb)
+  — notebook copied from [GPU MODE Lecture 005](https://github.com/gpu-mode/lectures/tree/main/lecture_005).
+
 ## Run on Brev
 
 From the repository root on your local machine, create a qualifying VM,

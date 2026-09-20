@@ -17,3 +17,10 @@ They are redistributed under the upstream Apache License 2.0; see the
 [lecture license](gpu-mode-lecture-004/LICENSE). The slides are kept unchanged.
 The notebook setup was adapted for the repository's non-root NGC environment
 and active-GPU architecture detection; lesson content remains upstream-derived.
+
+The notebook in `gpu-mode-lecture-005/` is copied from
+[`gpu-mode/lectures/lecture_005`](https://github.com/gpu-mode/lectures/tree/main/lecture_005),
+commit `77a8df418834e5789c12da23e7d2719e0efabef1`, retrieved 2026-09-20.
+
+It is redistributed under the upstream Apache License 2.0; see the
+[lecture license](gpu-mode-lecture-005/LICENSE). The notebook is kept unchanged.
