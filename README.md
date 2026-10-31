@@ -26,7 +26,9 @@ not in the host's Pylance analysis environment.
 - [Home GPU workspace](docs/home/workspace.md) — canonical editor, runtime,
   notebook, and Git workflow.
 - [Home infrastructure](infra/home/) — pinned image, Compose service, scripts,
-  observability, and operational rules.
+  and operational rules. Server observability is owned by the private
+  [GPU Server Home Lab](https://github.com/shanks-t/gpu-server-home-lab)
+  repository (`infra/observability/`); this checkout's former copy is retired.
 - [Curriculum](curriculum/README.md) — exercises and artifacts.
 - [Learning tools](learning-tools/README.md) — reusable interactive visualizations.
 - [Today I Learned](TIL.md) — notes from the journey.
